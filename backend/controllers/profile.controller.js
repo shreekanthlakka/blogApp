@@ -62,7 +62,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         { new: true }
     );
     if (!profile) {
-        throw new CustomError(404, "profile update failed !");
+        throw new CustomError(404, "profile update failed !!");
     }
     res.status(200).json(
         new CustomResponse(200, "profile updated !!!", profile)
