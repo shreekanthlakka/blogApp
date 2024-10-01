@@ -7,6 +7,6 @@ import { configCloudinary } from "./DB/configCloudinary.js";
 configCloudinary();
 
 app.listen(process.env.APP_PORT, () => {
-    console.log(`Server is running on port ${process.env.APP_PORT}`);
+    console.log(`Server is running on port ${process.env.APP_PORT} !`);
     connectToDB();
 });
