@@ -20,7 +20,7 @@ services:
         image: sreekanthlakka/blogapp-frontend:latest
         container_name: frontend
         ports:
-            - "80:5173"
+            - "5173:5173"
         depends_on:
             - backend
         restart: always
