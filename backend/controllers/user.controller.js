@@ -57,6 +57,7 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new CustomError(400, "Invalid credentials");
     }
     const isMatch = await user.isValidPassword(password);
+    console.log(isMatch);
     if (!isMatch) {
         throw new CustomError(400, "Invalid credentials");
     }
