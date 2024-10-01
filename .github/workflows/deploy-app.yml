@@ -1,0 +1,19 @@
+name: deploy-app
+on:
+    push:
+        branches:
+            - master
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - run: cd backend && docker build -t sreekanthlakka/blogapp-backend .
+            - run: cd frontend && docker build -t sreekanthlakka/blogapp-frontend .
+            - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+              env:
+                  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+                  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+            - run: docker push sreekanthlakka/blogapp-backend
+            - run: docker push sreekanthlakka/blogapp-frontend
+           
