@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "*"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,13 +18,12 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and Push Backend Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/blogapp-backend ./backend
-          docker push ${{ secrets.DOCKER_USERNAME }}/blogapp-backend
-
+          docker build -t sreekanthlakka/blogapp-backend ./backend
+          docker push sreekanthlakka/blogapp-backend
       - name: Build and Push Frontend Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/blogapp-frontend ./frontend
-          docker push ${{ secrets.DOCKER_USERNAME }}/blogapp-frontend
+          docker build -t sreekanthlakka/blogapp-frontend ./frontend
+          docker push sreekanthlakka/blogapp-frontend
       - name: Install SSH client
         run: sudo apt-get update && sudo apt-get install -y openssh-client
 
