@@ -1,0 +1,55 @@
+name: deploy-app
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name : checkout code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and Push Backend Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/blogapp-backend:latest ./backend
+          docker push ${{ secrets.DOCKER_USERNAME }}/your-backend-image:latest
+
+      - name: Build and Push Frontend Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/blogapp-frontend:latest ./frontend
+          docker push ${{ secrets.DOCKER_USERNAME }}/your-frontend-image:latest
+      - name: Install SSH client
+        run: sudo apt-get update && sudo apt-get install -y openssh-client
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Deploy to EC2
+        env:
+          DB_URL: ${{ secrets.DB_URL }}  # Injecting DB_URL from GitHub Secrets
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            # Change directory to where the repo is cloned on EC2
+            cd ${{ secrets.REMOTE_DIR }}
+
+            # Pull the latest changes from the repository
+            git pull origin main
+
+            # Set DB_URL as an environment variable and pass it to Docker Compose
+            export DB_URL=${{ secrets.DB_URL }}
+
+            # Rebuild and start containers with Docker Compose
+            docker-compose pull
+            docker-compose up -d --remove-orphans
+          EOF
