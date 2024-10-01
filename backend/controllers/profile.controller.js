@@ -64,7 +64,9 @@ const updateProfile = asyncHandler(async (req, res) => {
     if (!profile) {
         throw new CustomError(404, "profile update failed ");
     }
-    res.status(200).json(new CustomResponse(200, "profile updated !", profile));
+    res.status(200).json(
+        new CustomResponse(200, "profile updated !!", profile)
+    );
 });
 
 export { createProfile, getProfile, updateProfile };
