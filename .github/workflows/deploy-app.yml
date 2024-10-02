@@ -30,21 +30,34 @@ jobs:
                   username: ubuntu
                   key: ${{ secrets.EC2_SSH_KEY }}  
                   script: |
-                      sudo apt-get update
+                     sudo apt-get update
                       sudo apt-get install -y docker.io
-                      sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                      sudo chmod +x /usr/local/bin/docker-compose
-                      sudo usermod -aG docker ubuntu
                       
-                      if [ ! -d "/home/ubuntu/blogApp" ]; then
-                        git clone https://github.com/shreekanthlakka/blogApp /home/ubuntu/blogApp
+                      # Install Docker Compose if not installed
+                      if [ ! -f /usr/local/bin/docker-compose ]; then
+                        sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                        sudo chmod +x /usr/local/bin/docker-compose
                       fi
-                      cd /home/ubuntu/blogApp
                       
+                      # Add ubuntu user to docker group
+                      if ! groups ubuntu | grep &>/dev/null '\bdocker\b'; then
+                        sudo usermod -aG docker ubuntu
+                        newgrp docker
+                      fi
+
+                      # Clone the repo if it doesn't exist
+                      if [ ! -d "/home/ubuntu/blogapp" ]; then
+                        git clone https://github.com/shreekanthlakka/blogApp /home/ubuntu/blogapp
+                      fi
+
+                      cd /home/ubuntu/blogapp
+                      
+                      # Docker login using non-interactive method
                       echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                     
-                      docker-compose pull
-                      docker-compose up -d
+
+                      # Pull latest images and run containers
+                      sudo docker-compose pull
+                      sudo docker-compose up -d
               env:
                 DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
                 DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
