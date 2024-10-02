@@ -30,16 +30,15 @@ jobs:
                   username: ubuntu
                   key: ${{ secrets.EC2_SSH_KEY }}  
                   script: |
-                      sudo su
                       sudo apt-get update
                       sudo apt-get install -y docker.io
                       sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
                       sudo chmod +x /usr/local/bin/docker-compose
-                      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-                      cd /app
+                      echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                      cd /home/ubuntu/your-repo  # Adjust this path based on where your docker-compose.yml file is located
                       docker-compose pull
                       docker-compose up -d
               env:
-                  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-                  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+                DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+                DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
                  
