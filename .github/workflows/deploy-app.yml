@@ -35,10 +35,10 @@ jobs:
                       sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
                       sudo chmod +x /usr/local/bin/docker-compose
                       
-                      if [ ! -d "/blogapp" ]; then
+                      if [ ! -d "/home/ubuntu/blogapp" ]; then
                         git clone https://github.com/shreekanthlakka/blogApp /blogapp
                       fi
-                      cd /blogapp
+                      cd /home/ubuntu/blogapp
                       
                       echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
                      
